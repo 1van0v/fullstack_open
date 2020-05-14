@@ -1,0 +1,21 @@
+title Add a note in SPA
+
+note over Browser:
+Add new note
+end note
+
+note over Browser:
+The new note is added to notes array
+and the notes are redrawn
+end note
+
+note over Browser:
+post the created note
+{
+  "content":"note in SPA",
+  "date":"2020-05-14T17:59:38.565Z"
+}
+end note
+
+Browser->Server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+Server-->Browser: 201 Created 
