@@ -1,7 +1,9 @@
 import React from 'react';
 
+import Part from './Part';
+
 const Content = ({ parts }) => parts.map(
-  ({ part, value }) => <p>{part} {value}</p>
+  (part) => <Part part={part} />
 );
 
 export default Content;
