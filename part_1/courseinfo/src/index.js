@@ -10,9 +10,9 @@ import './index.css';
 const App = () => {
   const course = 'Half Stack application development';
   const parts = [
-    { part: 'Fundamentals of React', value: 10 },
-    { part: 'Using props to pass data', value: 7 },
-    { part: 'State of a component', value: 14 }
+    { name: 'Fundamentals of React', value: 10 },
+    { name: 'Using props to pass data', value: 7 },
+    { name: 'State of a component', value: 14 }
   ];
 
   return (
