@@ -7,12 +7,18 @@ export default function Statistics({ good, neutral, bad }) {
   return (
     <>
       <h1>Statistics</h1>
-      <div>good {good}</div>
-      <div>neutral {neutral}</div>
-      <div>bad {bad}</div>
-      <div>all {all}</div>
-      <div>average {average || 0}</div>
-      <div>positive {(good / all) * 100 || 0}%</div>
+      {all ? (
+        <>
+          <div>good {good}</div>
+          <div>neutral {neutral}</div>
+          <div>bad {bad}</div>
+          <div>all {all}</div>
+          <div>average {average}</div>
+          <div>positive {(good / all) * 100}%</div>
+        </>
+      ) : (
+        <p>No feedback given</p>
+      )}
     </>
   );
 }
