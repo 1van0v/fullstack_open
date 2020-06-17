@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import Anecdote from './Anecdote';
+import TopAnecdote from './TopAnecdotes';
 import './App.css';
 
 const anecdotes = [
@@ -29,11 +30,13 @@ function App() {
 
   return (
     <div className="container">
+      <h1>Anecdote of the day</h1>
       <Anecdote anecdote={selected} />
       <div>
         <button onClick={() => nextAnecdote(anecdotes, setSelected)}>next anecdote</button>
         <button onClick={() => vote(anecdotes, selected, setSelected)}>vote</button>
       </div>
+      <TopAnecdote anecdotes={anecdotes} />
     </div>
   );
 }
