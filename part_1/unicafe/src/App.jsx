@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import Statistics from './Statistics';
+import Voter from './Voter';
 
 export default function App() {
   const [good, setGood] = useState(0);
@@ -10,14 +11,10 @@ export default function App() {
   return (
     <>
       <h1>Give feedback</h1>
-      <button onClick={() => addFeedback(good, setGood)}>good</button>
-      <button onClick={() => addFeedback(neutral, setNeutral)}>neutral</button>
-      <button onClick={() => addFeedback(bad, setBad)}>bad</button>
+      <Voter text="good" state={good} updater={setGood} />
+      <Voter text="neutral" state={neutral} updater={setNeutral} />
+      <Voter text="bad" state={bad} updater={setBad} />
       <Statistics good={good} neutral={neutral} bad={bad} />
     </>
   );
-}
-
-function addFeedback(state, handler) {
-  handler(state + 1);
 }
