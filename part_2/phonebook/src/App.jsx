@@ -7,6 +7,10 @@ function App() {
 
   function addPerson(e) {
     e.preventDefault();
+    if (persons.some((person) => person.name === newName)) {
+      return alert(`${newName} is already added to phonebook`);
+    }
+
     setPersons(persons.concat({ name: newName }));
     setNewName('');
   }
@@ -22,8 +26,8 @@ function App() {
         <button>add</button>
       </form>
       <h2>Numbers</h2>
-      {persons.map(({ name }, index) => (
-        <div key={index}>{name}</div>
+      {persons.map(({ name }) => (
+        <div key={name}>{name}</div>
       ))}
     </div>
   );
