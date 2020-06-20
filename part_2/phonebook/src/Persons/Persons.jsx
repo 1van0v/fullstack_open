@@ -9,7 +9,7 @@ export default function Persons({ persons, filter }) {
       {persons
         .filter(({ name }) => name.toLowerCase().includes(filter))
         .map((person) => (
-          <Person key={person.name} person={person} />
+          <Person key={person.id} person={person} />
         ))}
     </>
   );
