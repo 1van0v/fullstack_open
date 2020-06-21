@@ -2,17 +2,19 @@ import React from 'react';
 
 import personsService from '../services/persons';
 
-export default function Person({ person, deleteHandler }) {
+export default function Person({ person, deleteHandler, notifier }) {
   const { name, number } = person;
 
   function deletePerson(person) {
     let isConfirmed = window.confirm(`${person.name} is about to be deleted. Please confirm.`);
 
     if (isConfirmed) {
-      personsService.deletePerson(person).then(() => {
-        alert(`${person.name} has been deleted`);
-        deleteHandler(person);
-      });
+      personsService
+        .deletePerson(person)
+        .then(() => {
+          deleteHandler(person);
+        })
+        .catch(() => notifier(`Something went wrong. ${person.name} was not deleted.`, true));
     }
   }
 
