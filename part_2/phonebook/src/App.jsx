@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import Filter from './Filter';
 import Persons from './Persons';
 import PersonForm from './PersonForm';
+import personsService from './services/notes';
 
 import './App.css';
 
@@ -12,7 +12,7 @@ function App() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:3001/persons').then(({ data }) => setPersons(data));
+    personsService.getPersons().then((fetchedPersons) => setPersons(fetchedPersons));
   }, []);
 
   function addPerson(person) {
@@ -20,7 +20,7 @@ function App() {
       return alert(`${person.name} is already added to phonebook`);
     }
 
-    setPersons(persons.concat(person));
+    personsService.addPerson(person).then((person) => setPersons(persons.concat(person)));
   }
 
   return (

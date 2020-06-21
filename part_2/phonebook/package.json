@@ -15,7 +15,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "prettier": "prettier --write .",
-    "json-server": "json-server --watch --port 3001 db.json",
+    "json-server": "json-server --port 3001 db.json",
     "up": "concurrently --kill-others \"npm run json-server\" \"npm run start\""
   },
   "eslintConfig": {
