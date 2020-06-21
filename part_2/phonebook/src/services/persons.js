@@ -10,4 +10,8 @@ function addPerson(person) {
   return axios.post(baseUrl, person).then((response) => response.data);
 }
 
-export default { getPersons, addPerson };
+function deletePerson({ id }) {
+  return axios.delete(`${baseUrl}/${id}`);
+}
+
+export default { getPersons, addPerson, deletePerson };

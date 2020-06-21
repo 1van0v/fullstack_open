@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Filter from './Filter';
 import Persons from './Persons';
 import PersonForm from './PersonForm';
-import personsService from './services/notes';
+import personsService from './services/persons';
 
 import './App.css';
 
@@ -28,7 +28,7 @@ function App() {
       <h2>Phonebook</h2>
       <Filter handler={setSearch} />
       <PersonForm addPerson={addPerson} />
-      <Persons persons={persons} filter={search} />
+      <Persons persons={persons} filter={search} updater={setPersons} />
     </>
   );
 }
