@@ -16,11 +16,27 @@ function App() {
   }, []);
 
   function addPerson(person) {
-    if (persons.some(({ name }) => person.name === name)) {
-      return alert(`${person.name} is already added to phonebook`);
+    const indexToUpdate = persons.findIndex(({ name }) => person.name === name);
+
+    if (indexToUpdate < 0) {
+      return personsService.addPerson(person).then((person) => setPersons(persons.concat(person)));
     }
 
-    personsService.addPerson(person).then((person) => setPersons(persons.concat(person)));
+    const isUpdate = window.confirm(
+      `${person.name} is already added to phonebook, replace the old number with a new one?`
+    );
+
+    if (isUpdate) {
+      const updated = persons[indexToUpdate];
+      personsService
+        .updateNumber(updated.id, person)
+        .then(() => alert(`Number of ${person.name} has been changed to ${person.number}`))
+        .then(() => {
+          const copied = persons.slice();
+          copied[indexToUpdate] = { ...updated, number: person.number };
+          setPersons(copied);
+        });
+    }
   }
 
   return (

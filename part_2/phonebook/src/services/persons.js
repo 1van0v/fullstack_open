@@ -14,4 +14,8 @@ function deletePerson({ id }) {
   return axios.delete(`${baseUrl}/${id}`);
 }
 
-export default { getPersons, addPerson, deletePerson };
+function updateNumber(id, person) {
+  return axios.put(`${baseUrl}/${id}`, person);
+}
+
+export default { getPersons, addPerson, deletePerson, updateNumber };
