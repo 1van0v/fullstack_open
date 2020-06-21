@@ -1,5 +1,7 @@
 import React from 'react';
 
+import CountriesListItem from './CountriesListItem';
+
 export default function CountriesList({ countries }) {
-  return countries.map(({ name }) => <div key={name}>{name}</div>);
+  return countries.map((country) => <CountriesListItem key={country.name} country={country} />);
 }
