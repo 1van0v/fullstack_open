@@ -31,9 +31,29 @@ function mostBlogs(blogs) {
   return topBlogger.blogs === 0 ? undefined : topBlogger;
 }
 
+function mostLikes(blogs) {
+  const likeCounter = {};
+  let topBlogger = { likes: 0 };
+
+  for (let { author, likes } of blogs) {
+    if (author in likeCounter) {
+      likeCounter[author] += likes;
+    } else {
+      likeCounter[author] = likes;
+    }
+
+    if (topBlogger.likes < likeCounter[author]) {
+      topBlogger = { author, likes: likeCounter[author] };
+    }
+  }
+
+  return topBlogger.likes === 0 ? undefined : topBlogger;
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
