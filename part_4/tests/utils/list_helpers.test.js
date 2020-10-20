@@ -1,47 +1,74 @@
-const listHelper = require("../../utils/list_helpers");
+const {
+  dummy,
+  totalLikes,
+  favoriteBlog,
+  mostBlogs,
+} = require("../../utils/list_helpers");
 
 const listWithOneBlog = [
   {
     likes: 5,
+    author: "Edsger W. Dijkstra",
   },
 ];
 
-const listWithTwoBlogs = [{ likes: 3 }, { likes: 5 }];
+const listWithSeveralBlogs = [
+  { likes: 3, author: "Robert C. Marti" },
+  { likes: 5, author: "Edsger W. Dijkstra" },
+  { likes: 4, author: "Robert C. Marti" },
+];
 
 test("dummy returns one", () => {
-  expect(listHelper.dummy([])).toBe(1);
+  expect(dummy([])).toBe(1);
 });
 
 describe("total likes", () => {
   test("when list has only one blog, equals the likes of that", () => {
-    const likes = listHelper.totalLikes(listWithOneBlog);
+    const likes = totalLikes(listWithOneBlog);
     expect(likes).toBe(5);
   });
 
   test("when list has no blogs, returns 0", () => {
-    const likes = listHelper.totalLikes([]);
+    const likes = totalLikes([]);
     expect(likes).toBe(0);
   });
 
   test("when list has several blogs, sums the likes", () => {
-    const likes = listHelper.totalLikes(listWithTwoBlogs);
-    expect(likes).toBe(8);
+    const likes = totalLikes(listWithSeveralBlogs);
+    expect(likes).toBe(12);
   });
 });
 
 describe("favoriteBlog", () => {
   test("when list has only one blog, equals it", () => {
-    const favorite = listHelper.favoriteBlog(listWithOneBlog);
+    const favorite = favoriteBlog(listWithOneBlog);
     expect(favorite).toEqual(listWithOneBlog[0]);
   });
 
   test("when list has no blogs, returns undefined", () => {
-    const favorite = listHelper.favoriteBlog([]);
+    const favorite = favoriteBlog([]);
     expect(favorite).toBe(undefined);
   });
 
   test("when list has several blogs, returns top liked one", () => {
-    const favorite = listHelper.favoriteBlog(listWithTwoBlogs);
-    expect(favorite).toEqual(listWithTwoBlogs[1]);
+    const favorite = favoriteBlog(listWithSeveralBlogs);
+    expect(favorite).toEqual(listWithSeveralBlogs[1]);
+  });
+});
+
+describe("mostBlogs", () => {
+  test("when list has only one blog, equals it", () => {
+    const mostBlogger = mostBlogs(listWithOneBlog);
+    expect(mostBlogger).toEqual({ author: "Edsger W. Dijkstra", blogs: 1 });
+  });
+
+  test("when list has several blogs, returns blogger with most blogs", () => {
+    const mostBlogger = mostBlogs(listWithSeveralBlogs);
+    expect(mostBlogger).toEqual({ author: "Robert C. Marti", blogs: 2 });
+  });
+
+  test("when list has no blogs, returns undefined", () => {
+    const mostBlogger = mostBlogs([]);
+    expect(mostBlogger).toBe(undefined);
   });
 });
