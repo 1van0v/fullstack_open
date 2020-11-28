@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "jest --verbose"
+    "test": "NODE_ENV=test jest --verbose"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +14,8 @@
   },
   "devDependencies": {
     "jest": "^26.4.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "supertest": "^6.0.1"
   },
   "dependencies": {
     "cors": "^2.8.5",
