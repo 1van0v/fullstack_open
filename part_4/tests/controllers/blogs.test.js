@@ -70,6 +70,24 @@ describe("Blogs controller", () => {
       const { body: createdBlog } = await api.post(url).send(testBlog);
       expect(createdBlog).toMatchObject({ ...testBlog, likes: 0 });
     });
+
+    test("should return 400 if a posted blog does not have title", async () => {
+      const testBlog = {
+        author: "author",
+        url: "url",
+      };
+
+      await api.post(url).send(testBlog).expect(400);
+    });
+
+    test("should return 400 if a posted blog does not have url", async () => {
+      const testBlog = {
+        author: "author",
+        title: "title",
+      };
+
+      await api.post(url).send(testBlog).expect(400);
+    });
   });
 
   afterAll(() => {

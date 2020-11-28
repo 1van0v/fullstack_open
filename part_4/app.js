@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const { MONGO_URI: mongoUrl } = require("./utils/config");
 const blogsRouter = require("./controllers/blogs");
-const { requestLogger } = require("./utils/middleware");
+const { requestLogger, errorHandler } = require("./utils/middleware");
 
 module.exports.dbSetup = mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
@@ -17,5 +17,7 @@ app.use(express.json());
 app.use(requestLogger);
 
 app.use("/api/blogs", blogsRouter);
+
+app.use(errorHandler);
 
 module.exports.app = app;
