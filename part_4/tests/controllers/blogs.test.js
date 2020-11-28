@@ -90,6 +90,28 @@ describe("Blogs controller", () => {
     });
   });
 
+  describe("DELETE request", () => {
+    beforeEach(async () => {
+      const testBlog = {
+        author: "author",
+        title: "title",
+        url: "url",
+      };
+
+      await blog.deleteMany({});
+      await api.post(url).send(testBlog).expect(201);
+    });
+
+    test("should delete specified blog", async () => {
+      const { body: blogs } = await api.get(url);
+      expect(blogs).toHaveLength(1);
+
+      await api.delete(url + "/" + blogs[0].id);
+      const { body: restBlogs } = await api.get(url);
+      expect(restBlogs).toHaveLength(0);
+    });
+  });
+
   afterAll(() => {
     mongoose.connection.close();
   });
