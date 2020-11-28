@@ -34,14 +34,29 @@ describe("Blogs controller", () => {
     expect(response.body.length).toBe(0);
   });
 
-  test("should contain one blog", async () => {
-    await api.post(url).send(initialBlogs[0]).expect(201);
+  describe("GET request", () => {
+    beforeEach(async () => {
+      await blog.deleteMany({});
 
-    const response = await api.get(url);
+      for (const blog of initialBlogs) {
+        await api.post(url).send(blog).expect(201);
+      }
+    });
 
-    expect(response.body).toHaveLength(1);
-    const { id, ...storedBlog } = response.body[0];
-    expect(storedBlog).toMatchObject(initialBlogs[0]);
+    test("should contain one blog", async () => {
+      const response = await api.get(url);
+
+      expect(response.body).toHaveLength(2);
+      const { id, ...storedBlog } = response.body[0];
+      expect(storedBlog).toMatchObject(initialBlogs[0]);
+    });
+
+    test("should have id property is set up", async () => {
+      const { body: data } = await api.get(url);
+
+      expect(data[0].id).toBeDefined();
+      expect(data[1].id).toBeDefined();
+    });
   });
 
   afterAll(() => {
