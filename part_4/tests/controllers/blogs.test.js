@@ -36,8 +36,6 @@ describe("Blogs controller", () => {
 
   describe("GET request", () => {
     beforeEach(async () => {
-      await blog.deleteMany({});
-
       for (const blog of initialBlogs) {
         await api.post(url).send(blog).expect(201);
       }
@@ -47,8 +45,10 @@ describe("Blogs controller", () => {
       const response = await api.get(url);
 
       expect(response.body).toHaveLength(2);
-      const { id, ...storedBlog } = response.body[0];
-      expect(storedBlog).toMatchObject(initialBlogs[0]);
+      response.body.forEach((blog, index) => {
+        const { id, ...storedBlog } = blog;
+        expect(storedBlog).toMatchObject(initialBlogs[index]);
+      });
     });
 
     test("should have id property is set up", async () => {
@@ -56,6 +56,19 @@ describe("Blogs controller", () => {
 
       expect(data[0].id).toBeDefined();
       expect(data[1].id).toBeDefined();
+    });
+  });
+
+  describe("POST request", () => {
+    test("should set likes to 0 if that property is missed", async () => {
+      const testBlog = {
+        title: "test",
+        author: "author",
+        url: "url",
+      };
+
+      const { body: createdBlog } = await api.post(url).send(testBlog);
+      expect(createdBlog).toMatchObject({ ...testBlog, likes: 0 });
     });
   });
 
