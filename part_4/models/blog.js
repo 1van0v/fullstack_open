@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const modelToJSON = require("../utils/model_to_json");
 
 const blogSchema = mongoose.Schema({
   title: { type: String, required: true },
@@ -7,12 +8,6 @@ const blogSchema = mongoose.Schema({
   likes: { type: Number, default: 0 },
 });
 
-blogSchema.set("toJSON", {
-  transform(document, returnedObj) {
-    returnedObj.id = returnedObj._id.toString();
-    delete returnedObj._id;
-    delete returnedObj.__v;
-  },
-});
+blogSchema.set("toJSON", modelToJSON);
 
 module.exports = mongoose.model("Blog", blogSchema);

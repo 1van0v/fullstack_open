@@ -38,7 +38,7 @@ blogsRouter.put("/:id", async (req, res, next) => {
     const status = result ? 200 : 404;
     res.status(status).json(result);
   } catch (error) {
-    next(error);
+    return next(error);
   }
   return next();
 });
