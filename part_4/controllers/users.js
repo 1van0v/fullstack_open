@@ -1,6 +1,7 @@
 const usersRouter = require("express").Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
+const userValidator = require("../utils/user_validator");
 
 usersRouter.get("/", async (req, res, next) => {
   const users = await User.find({});
@@ -8,7 +9,7 @@ usersRouter.get("/", async (req, res, next) => {
   return next();
 });
 
-usersRouter.post("/", async (req, res, next) => {
+usersRouter.post("/", userValidator, async (req, res, next) => {
   const saltRound = 10;
 
   try {

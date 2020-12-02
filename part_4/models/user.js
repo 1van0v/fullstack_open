@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const modelToJSON = require("../utils/model_to_json");
 
 const userSchema = mongoose.Schema({
-  username: { type: String, required: true },
+  username: { type: String, required: true, minlength: 3, unique: true },
   name: { type: String, required: true },
   passwordHash: { type: String, required: true },
 });

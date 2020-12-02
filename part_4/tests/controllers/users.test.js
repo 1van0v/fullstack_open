@@ -60,7 +60,7 @@ describe("Users controller", () => {
     afterAll(async () => user.deleteMany({}));
   });
 
-  describe("POST request", () => {
+  describe("Create user", () => {
     const testUser = {
       username: "test",
       name: "name",
@@ -77,16 +77,38 @@ describe("Users controller", () => {
 
     test("should hash the provided password and store it in DB", async () => {
       const testHash = "hashed";
+      const userToCreate = { ...testUser, username: "eeeee" };
       const hashSpy = jest.spyOn(bcrypt, "hash").mockReturnValue(testHash);
 
       const { body: createdUser } = await api
         .post(url)
-        .send(testUser)
+        .send(userToCreate)
         .expect(201);
       expect(hashSpy).toHaveBeenCalledWith(testUser.password, 10);
 
       const userInDB = await user.findById(createdUser.id);
       expect(userInDB.passwordHash).toEqual(testHash);
+    });
+
+    describe("user validation", () => {
+      test("should return reject user creation when username is less then 3 symbols", async () => {
+        const newUser = { ...testUser, username: "a" };
+        await api.post(url).send(newUser).expect(400);
+      });
+
+      test("should reject user creation with the same username", async () => {
+        await api.post(url).send(testUser).expect(201);
+        await api.post(url).send(testUser).expect(400);
+      });
+
+      test("should reject user creation if password is shorter then 3 symbols", async () => {
+        const userToCreate = { ...testUser, password: "1" };
+        await api.post(url).send(userToCreate).expect(400);
+        const createdUsers = await user.find({});
+        expect(createdUsers).toHaveLength(0);
+      });
+
+      afterEach(async () => user.deleteMany({}));
     });
   });
 });
