@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 const { app, dbSetup } = require("../../app");
 const user = require("../../models/user");
+const createTestUser = require("../create_test_user");
 const api = supertest(app);
 
 describe("Users controller", () => {
@@ -21,33 +22,21 @@ describe("Users controller", () => {
     });
 
     test("should return posted user", async () => {
-      const testUser = {
-        username: "test",
-        name: "test name",
-        password: "test",
-      };
+      const testUser = createTestUser();
       await api.post(url).send(testUser).expect(201);
       const { body: createdUsers } = await api.get(url).expect(200);
       expect(createdUsers).toHaveLength(1);
     });
 
     test("should return posted users", async () => {
-      const testUser = {
-        username: "test1",
-        name: "test name1",
-        password: "test1",
-      };
+      const testUser = createTestUser(2);
       await api.post(url).send(testUser).expect(201);
       const { body: createdUsers } = await api.get(url).expect(200);
       expect(createdUsers).toHaveLength(2);
     });
 
     test("should return id, name and username fields", async () => {
-      const testUser = {
-        name: "test2",
-        username: "test2",
-        password: "test2",
-      };
+      const testUser = createTestUser(3);
       await api.post(url).send(testUser);
       const { body: users } = await api.get(url);
       expect(
@@ -61,11 +50,7 @@ describe("Users controller", () => {
   });
 
   describe("Create user", () => {
-    const testUser = {
-      username: "test",
-      name: "name",
-      password: "test",
-    };
+    const testUser = createTestUser();
 
     test("should return a created user with id, name and username", async () => {
       const { body: createdUser } = await api.post(url).send(testUser);

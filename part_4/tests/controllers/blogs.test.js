@@ -3,6 +3,8 @@ const supertest = require("supertest");
 
 const { app, dbSetup } = require("../../app");
 const blog = require("../../models/blog");
+const user = require("../../models/user");
+const createTestUser = require("../create_test_user");
 const api = supertest(app);
 
 const initialBlogs = [
@@ -22,23 +24,39 @@ const initialBlogs = [
 
 describe("Blogs controller", () => {
   const url = "/api/blogs/";
+  let createdUser;
 
   beforeAll(async () => {
     await dbSetup;
     await blog.deleteMany({});
+    await user.deleteMany({});
+
+    const testUser = createTestUser();
+    const { body } = await api.post("/api/users").send(testUser).expect(201);
+    createdUser = body;
   });
 
   test("should contain no blogs", async () => {
     const response = await api.get(url);
-
     expect(response.body.length).toBe(0);
   });
 
   describe("GET request", () => {
-    beforeEach(async () => {
+    beforeAll(async () => {
       for (const blog of initialBlogs) {
         await api.post(url).send(blog).expect(201);
       }
+    });
+
+    test("should add blogs to user", async () => {
+      const { body: createdBlogs } = await api.get(url);
+      const { body: createdUsers } = await api.get("/api/users");
+
+      expect(createdUsers[0].blogs).toHaveLength(2);
+      createdUsers[0].blogs.forEach((blog, index) => {
+        const { user, ...blogInBlogs } = createdBlogs[index];
+        expect(blog).toMatchObject(blogInBlogs);
+      });
     });
 
     test("should contain one blog", async () => {
@@ -77,6 +95,15 @@ describe("Blogs controller", () => {
       const { url: excludedUrl, ...testBlog } = initialBlogs[0];
 
       await api.post(url).send(testBlog).expect(400);
+    });
+
+    test("should link created blog to user", async () => {
+      await api.post(url).send(initialBlogs[1]).expect(201);
+      const { body: createdBlogs } = await api.get(url).expect(200);
+
+      const [createdBlog] = createdBlogs;
+      const { blogs, ...storedUser } = createdUser;
+      expect(createdBlog.user).toMatchObject(storedUser);
     });
 
     afterAll(async () => await blog.deleteMany({}));
@@ -135,11 +162,12 @@ describe("Blogs controller", () => {
 
     test("should not change blog if no properties were specified", async () => {
       const { body: blogsBeforeUpdate } = await api.get(url);
-      const { body: updatedBlog } = await api
+      await api
         .put(url + blogId)
         .send({})
         .expect(200);
-      expect(blogsBeforeUpdate[0]).toMatchObject(updatedBlog);
+      const { body: blogsAfterUpdate } = await api.get(url);
+      expect(blogsBeforeUpdate[0]).toMatchObject(blogsAfterUpdate[0]);
     });
   });
 
@@ -147,3 +175,5 @@ describe("Blogs controller", () => {
     mongoose.connection.close();
   });
 });
+
+module.exports.initialBlogs = initialBlogs;

@@ -1,19 +1,25 @@
 const blogsRouter = require("express").Router();
 
 const Blog = require("../models/blog");
+const user = require("../models/user");
 
 blogsRouter.get("/", async (req, res, next) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
   res.json(blogs);
   return next();
 });
 
 blogsRouter.post("/", async (req, res, next) => {
   try {
-    const newBlog = new Blog(req.body);
+    const selectedUser = await user.findOne({}).exec();
+    const newBlog = new Blog({ ...req.body, user: selectedUser._id });
 
-    const result = await newBlog.save();
-    res.status(201).json(result);
+    const createdBlog = await newBlog.save();
+
+    selectedUser.blogs.push(createdBlog._id);
+    await selectedUser.save();
+
+    res.status(201).json(createdBlog);
   } catch (error) {
     return next(error);
   }

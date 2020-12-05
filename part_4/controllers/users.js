@@ -4,7 +4,12 @@ const User = require("../models/user");
 const userValidator = require("../utils/user_validator");
 
 usersRouter.get("/", async (req, res, next) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate("blogs", {
+    title: 1,
+    url: 1,
+    likes: 1,
+    author: 1,
+  });
   res.json(users);
   return next();
 });
