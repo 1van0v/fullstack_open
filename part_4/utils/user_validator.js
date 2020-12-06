@@ -1,4 +1,5 @@
-const user = require("../models/user");
+const { findUserByUsername } = require("./find_user_by_username");
+const { ValidationError } = require("./errors");
 
 async function userValidator(req, res, next) {
   const { username, password } = req.body;
@@ -11,19 +12,13 @@ async function userValidator(req, res, next) {
     return next(new ValidationError("invalid username"));
   }
 
-  const { username: storedUser } =
-    (await user.findOne({ username }).exec()) || {};
+  const { username: storedUser } = findUserByUsername(username);
 
   if (storedUser) {
     return next(new ValidationError("user already exists"));
   }
 
   return next();
-}
-
-function ValidationError(message) {
-  this.message = message;
-  this.name = "ValidationError";
 }
 
 module.exports = userValidator;

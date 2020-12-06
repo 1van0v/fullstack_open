@@ -1,4 +1,5 @@
 const logger = require("./logger");
+const { ValidationError, AuthenticationError } = require("./errors");
 
 function requestLogger(req, res, next) {
   logger.info(res.statusCode, req.method, req.path, req.body);
@@ -10,15 +11,18 @@ function unknownEndpoint(req, res, next) {
 }
 
 function errorHandler(error, req, res, next) {
-  logger.error(error.message);
+  let status = 500;
+  logger.error(error);
 
   if (error.name === "CastError") {
-    return res.status(400).send({ error: "malformed id" });
-  } else if (error.name === "ValidationError") {
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: "malformed id" });
+  } else if (error instanceof ValidationError) {
+    status = 400;
+  } else if (error instanceof AuthenticationError) {
+    status = 401;
   }
 
-  next(error);
+  return res.status(status).json({ error: error.message });
 }
 
 module.exports = {

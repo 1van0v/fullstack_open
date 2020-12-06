@@ -96,4 +96,6 @@ describe("Users controller", () => {
       afterEach(async () => user.deleteMany({}));
     });
   });
+
+  afterAll(async () => await mongoose.connection.close());
 });

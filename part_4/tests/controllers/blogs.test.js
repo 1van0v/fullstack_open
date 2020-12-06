@@ -171,9 +171,7 @@ describe("Blogs controller", () => {
     });
   });
 
-  afterAll(() => {
-    mongoose.connection.close();
-  });
+  afterAll(async () => await mongoose.connection.close());
 });
 
 module.exports.initialBlogs = initialBlogs;
