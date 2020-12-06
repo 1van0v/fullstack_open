@@ -13,7 +13,6 @@ function getTokenFrom(request) {
   const tokenStartIndex = "bearer ".length;
   const authorizationHeader = request.get("authorization") || "";
   const token = authorizationHeader.substring(tokenStartIndex);
-  console.log("token", token);
   return token ? validateToken(token) : "";
 }
 

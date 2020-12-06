@@ -136,22 +136,43 @@ describe("Blogs controller", () => {
   });
 
   describe("DELETE request", () => {
+    let createdBlogId;
     beforeEach(async () => {
       const [testBlog] = initialBlogs;
 
       await blog.deleteMany({});
-      await api
+      const createBlogResponse = await api
         .post(url)
         .set(createAuthHeader(token))
         .send(testBlog)
         .expect(201);
+      createdBlogId = createBlogResponse.body.id;
+    });
+
+    test("should return 401 if request does not have authorization header", async () => {
+      await api.delete(url + createdBlogId).expect(401);
+    });
+
+    test("should return 401 if user tries to delete a blog that does not belong to him", async () => {
+      const secondTestUser = createTestUser(2);
+      await api.post("/api/users").send(secondTestUser);
+
+      const { username, password } = secondTestUser;
+      const secondUserLogin = await api
+        .post("/api/login")
+        .send({ username, password });
+
+      await api
+        .delete(url + createdBlogId)
+        .set(createAuthHeader(secondUserLogin.body.token))
+        .expect(401);
     });
 
     test("should delete specified blog", async () => {
       const { body: blogs } = await api.get(url);
       expect(blogs).toHaveLength(1);
 
-      await api.delete(url + blogs[0].id);
+      await api.delete(url + blogs[0].id).set(createAuthHeader(token));
       const { body: restBlogs } = await api.get(url);
       expect(restBlogs).toHaveLength(0);
     });

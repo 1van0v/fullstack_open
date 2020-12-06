@@ -3,6 +3,7 @@ const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const user = require("../models/user");
 const { authorizationHandler } = require("../utils/middleware");
+const { AuthenticationError } = require("../utils/errors");
 
 blogsRouter.get("/", async (req, res, next) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
@@ -28,9 +29,17 @@ blogsRouter.post("/", authorizationHandler, async (req, res, next) => {
   return next();
 });
 
-blogsRouter.delete("/:id", async (req, res, next) => {
+blogsRouter.delete("/:id", authorizationHandler, async (req, res, next) => {
   try {
-    await Blog.findByIdAndDelete(req.params.id);
+    const deletedBlog = await Blog.findOneAndDelete({
+      _id: req.params.id,
+      user: req.token.id,
+    });
+
+    if (!deletedBlog) {
+      throw new AuthenticationError("unauthorized to delete this blog");
+    }
+
     res.status(204).end();
     return next();
   } catch (error) {
