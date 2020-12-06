@@ -30,7 +30,10 @@ function App() {
           setPersons(persons.concat(person));
           showMessage(`${person.name} has been successfully added to phonebook`);
         })
-        .catch(() => showMessage(`Something went wrong. ${person.name} was not added.`, true));
+        .catch((error) => {
+          const message = error.response.data.error || `Something went wrong. ${person.name} was not added.`;
+          showMessage(message, true);
+        });
     }
 
     const isUpdate = window.confirm(
