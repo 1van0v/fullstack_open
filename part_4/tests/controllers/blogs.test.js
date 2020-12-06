@@ -4,6 +4,7 @@ const supertest = require("supertest");
 const { app, dbSetup } = require("../../app");
 const blog = require("../../models/blog");
 const user = require("../../models/user");
+const { createAuthHeader } = require("../../utils/token_utils");
 const createTestUser = require("../create_test_user");
 const api = supertest(app);
 
@@ -25,6 +26,7 @@ const initialBlogs = [
 describe("Blogs controller", () => {
   const url = "/api/blogs/";
   let createdUser;
+  let token;
 
   beforeAll(async () => {
     await dbSetup;
@@ -33,6 +35,11 @@ describe("Blogs controller", () => {
 
     const testUser = createTestUser();
     const { body } = await api.post("/api/users").send(testUser).expect(201);
+    const { username, password } = testUser;
+    const loginResponse = await api
+      .post("/api/login")
+      .send({ username, password });
+    token = loginResponse.body.token;
     createdUser = body;
   });
 
@@ -44,7 +51,7 @@ describe("Blogs controller", () => {
   describe("GET request", () => {
     beforeAll(async () => {
       for (const blog of initialBlogs) {
-        await api.post(url).send(blog).expect(201);
+        await api.post(url).set(createAuthHeader(token)).send(blog).expect(201);
       }
     });
 
@@ -78,27 +85,46 @@ describe("Blogs controller", () => {
   });
 
   describe("POST request", () => {
-    test("should set likes to 0 if that property is missed", async () => {
-      const { likes, ...testBlog } = initialBlogs[0];
-
-      const { body: createdBlog } = await api.post(url).send(testBlog);
-      expect(createdBlog).toMatchObject({ ...testBlog, likes: 0 });
+    test("should return 401 if a request does not have token header", async () => {
+      await api.post(url).send(initialBlogs[0]).expect(401);
     });
 
     test("should return 400 if a posted blog does not have title", async () => {
       const { title, ...testBlog } = initialBlogs[0];
 
-      await api.post(url).send(testBlog).expect(400);
+      await api
+        .post(url)
+        .set(createAuthHeader(token))
+        .send(testBlog)
+        .expect(400);
     });
 
     test("should return 400 if a posted blog does not have url", async () => {
       const { url: excludedUrl, ...testBlog } = initialBlogs[0];
 
-      await api.post(url).send(testBlog).expect(400);
+      await api
+        .post(url)
+        .set(createAuthHeader(token))
+        .send(testBlog)
+        .expect(400);
+    });
+
+    test("should set likes to 0 if that property is missed", async () => {
+      const { likes, ...testBlog } = initialBlogs[0];
+
+      const { body: createdBlog } = await api
+        .post(url)
+        .set(createAuthHeader(token))
+        .send(testBlog);
+      expect(createdBlog).toMatchObject({ ...testBlog, likes: 0 });
     });
 
     test("should link created blog to user", async () => {
-      await api.post(url).send(initialBlogs[1]).expect(201);
+      await api
+        .post(url)
+        .set(createAuthHeader(token))
+        .send(initialBlogs[1])
+        .expect(201);
       const { body: createdBlogs } = await api.get(url).expect(200);
 
       const [createdBlog] = createdBlogs;
@@ -114,7 +140,11 @@ describe("Blogs controller", () => {
       const [testBlog] = initialBlogs;
 
       await blog.deleteMany({});
-      await api.post(url).send(testBlog).expect(201);
+      await api
+        .post(url)
+        .set(createAuthHeader(token))
+        .send(testBlog)
+        .expect(201);
     });
 
     test("should delete specified blog", async () => {
@@ -135,6 +165,7 @@ describe("Blogs controller", () => {
       await blog.deleteMany({});
       const { body: createdBlog } = await api
         .post(url)
+        .set(createAuthHeader(token))
         .send(testBlog)
         .expect(201);
       blogId = createdBlog.id;

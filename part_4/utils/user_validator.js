@@ -12,7 +12,7 @@ async function userValidator(req, res, next) {
     return next(new ValidationError("invalid username"));
   }
 
-  const { username: storedUser } = findUserByUsername(username);
+  const { username: storedUser } = await findUserByUsername(username);
 
   if (storedUser) {
     return next(new ValidationError("user already exists"));

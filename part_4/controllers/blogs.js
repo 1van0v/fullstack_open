@@ -2,6 +2,7 @@ const blogsRouter = require("express").Router();
 
 const Blog = require("../models/blog");
 const user = require("../models/user");
+const { authorizationHandler } = require("../utils/middleware");
 
 blogsRouter.get("/", async (req, res, next) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
@@ -9,10 +10,11 @@ blogsRouter.get("/", async (req, res, next) => {
   return next();
 });
 
-blogsRouter.post("/", async (req, res, next) => {
+blogsRouter.post("/", authorizationHandler, async (req, res, next) => {
   try {
-    const selectedUser = await user.findOne({}).exec();
-    const newBlog = new Blog({ ...req.body, user: selectedUser._id });
+    const userId = req.token.id;
+    const selectedUser = await user.findById(userId);
+    const newBlog = new Blog({ ...req.body, user: userId });
 
     const createdBlog = await newBlog.save();
 

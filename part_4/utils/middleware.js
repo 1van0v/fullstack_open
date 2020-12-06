@@ -1,5 +1,6 @@
 const logger = require("./logger");
-const { ValidationError, AuthenticationError } = require("./errors");
+const { AuthenticationError } = require("./errors");
+const { getTokenFrom } = require("./token_utils");
 
 function requestLogger(req, res, next) {
   logger.info(res.statusCode, req.method, req.path, req.body);
@@ -16,7 +17,7 @@ function errorHandler(error, req, res, next) {
 
   if (error.name === "CastError") {
     return res.status(400).json({ error: "malformed id" });
-  } else if (error instanceof ValidationError) {
+  } else if (error.name === "ValidationError") {
     status = 400;
   } else if (error instanceof AuthenticationError) {
     status = 401;
@@ -25,8 +26,20 @@ function errorHandler(error, req, res, next) {
   return res.status(status).json({ error: error.message });
 }
 
+function authorizationHandler(req, res, next) {
+  const token = getTokenFrom(req);
+
+  if (token && token.id) {
+    req.token = token;
+    return next();
+  }
+
+  return next(new AuthenticationError("token is missing or invalid"));
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  authorizationHandler,
 };
