@@ -1,6 +1,7 @@
 const logger = require("./logger");
 const { AuthenticationError } = require("./errors");
 const { getTokenFrom } = require("./token_utils");
+const User = require("../models/user");
 
 function requestLogger(req, res, next) {
   logger.info(res.statusCode, req.method, req.path, req.body);
@@ -26,15 +27,21 @@ function errorHandler(error, req, res, next) {
   return res.status(status).json({ error: error.message });
 }
 
-function authorizationHandler(req, res, next) {
+async function authorizationHandler(req, res, next) {
   const token = getTokenFrom(req);
 
-  if (token && token.id) {
-    req.token = token;
-    return next();
-  }
+  try {
+    const user = await User.findById(token.id);
 
-  return next(new AuthenticationError("token is missing or invalid"));
+    if (!user) {
+      throw new Error("no such user");
+    }
+    req.token = token;
+    req.authorized_user = user;
+    return next();
+  } catch (e) {
+    return next(new AuthenticationError("token is missing or invalid"));
+  }
 }
 
 module.exports = {

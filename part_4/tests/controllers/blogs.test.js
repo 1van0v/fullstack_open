@@ -120,14 +120,12 @@ describe("Blogs controller", () => {
     });
 
     test("should link created blog to user", async () => {
-      await api
+      const { body: createdBlog } = await api
         .post(url)
         .set(createAuthHeader(token))
         .send(initialBlogs[1])
         .expect(201);
-      const { body: createdBlogs } = await api.get(url).expect(200);
 
-      const [createdBlog] = createdBlogs;
       const { blogs, ...storedUser } = createdUser;
       expect(createdBlog.user).toMatchObject(storedUser);
     });
@@ -180,6 +178,7 @@ describe("Blogs controller", () => {
 
   describe("PUT request", () => {
     let blogId;
+    let user;
 
     beforeEach(async () => {
       const [testBlog] = initialBlogs;
@@ -190,6 +189,8 @@ describe("Blogs controller", () => {
         .send(testBlog)
         .expect(201);
       blogId = createdBlog.id;
+      const { blogs, ...storedUser } = createdUser;
+      user = storedUser;
     });
 
     test("should update property of blog", async () => {
@@ -201,13 +202,19 @@ describe("Blogs controller", () => {
       };
       const { body: updatedBlog } = await api
         .put(url + blogId)
+        .set(createAuthHeader(token))
         .send(propertyToUpdate);
-      expect(updatedBlog).toMatchObject({ id: blogId, ...propertyToUpdate });
+      expect(updatedBlog).toMatchObject({
+        id: blogId,
+        ...propertyToUpdate,
+        user,
+      });
     });
 
     test("should return 404 when specified id does not exist", async () => {
       await api
         .put(url + mongoose.Types.ObjectId())
+        .set(createAuthHeader(token))
         .send({ title: "test" })
         .expect(404);
     });
@@ -216,6 +223,7 @@ describe("Blogs controller", () => {
       const { body: blogsBeforeUpdate } = await api.get(url);
       await api
         .put(url + blogId)
+        .set(createAuthHeader(token))
         .send({})
         .expect(200);
       const { body: blogsAfterUpdate } = await api.get(url);

@@ -26,6 +26,7 @@ loginRouter.post("/", async (req, res, next) => {
     const token = generateToken({
       id: storedUser.id,
       username: storedUser.username,
+      name: storedUser.name,
     });
 
     res.status(200).json({ token });

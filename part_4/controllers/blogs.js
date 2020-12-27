@@ -13,16 +13,27 @@ blogsRouter.get("/", async (req, res, next) => {
 
 blogsRouter.post("/", authorizationHandler, async (req, res, next) => {
   try {
-    const userId = req.token.id;
-    const selectedUser = await user.findById(userId);
+    const {
+      authorized_user,
+      token: { id: userId },
+    } = req;
     const newBlog = new Blog({ ...req.body, user: userId });
 
     const createdBlog = await newBlog.save();
 
-    selectedUser.blogs.push(createdBlog._id);
-    await selectedUser.save();
+    if (!authorized_user.blogs) {
+      authorized_user.blogs = [];
+    }
 
-    res.status(201).json(createdBlog);
+    authorized_user.blogs.push(createdBlog._id);
+    await authorized_user.save();
+
+    const { username, name } = authorized_user;
+
+    res.status(201).json({
+      ...createdBlog.toJSON(),
+      user: { username, name, id: userId },
+    });
   } catch (error) {
     return next(error);
   }
@@ -47,13 +58,18 @@ blogsRouter.delete("/:id", authorizationHandler, async (req, res, next) => {
   }
 });
 
-blogsRouter.put("/:id", async (req, res, next) => {
+blogsRouter.put("/:id", authorizationHandler, async (req, res, next) => {
   try {
     const result = await Blog.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    const status = result ? 200 : 404;
-    res.status(status).json(result);
+
+    if (!result) {
+      return res.status(404).end();
+    }
+
+    const { blogs, ...user } = req.authorized_user.toJSON();
+    res.status(200).json({ ...result.toJSON(), user });
   } catch (error) {
     return next(error);
   }
