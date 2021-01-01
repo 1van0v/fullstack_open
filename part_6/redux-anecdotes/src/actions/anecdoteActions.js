@@ -7,4 +7,13 @@ export function vote(id) {
   };
 }
 
+export function create(anecdote) {
+  return {
+    type: "CREATE",
+    data: {
+      content: anecdote,
+    },
+  };
+}
+
 export default vote;
