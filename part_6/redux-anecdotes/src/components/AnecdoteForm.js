@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 
-import * as anecdoteActions from "../actions/anecdoteActions";
+import * as anecdoteActions from "../store/actions/anecdoteActions";
 
 export default function AnecdoteForm() {
   const dispatch = useDispatch();
