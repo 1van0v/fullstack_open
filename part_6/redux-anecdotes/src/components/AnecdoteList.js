@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as anecdoteActions from "../store/actions/anecdoteActions";
 
 export default function AnecdoteForm() {
-  const anecdotes = useSelector((state) => state);
+  const anecdotes = useSelector((state) => state.anecdotes);
   const dispatch = useDispatch();
 
   const vote = (id) => {
