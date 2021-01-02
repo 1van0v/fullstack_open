@@ -16,4 +16,11 @@ function create(anecdote) {
   };
 }
 
-export default { vote, create };
+function init(anecdotes) {
+  return {
+    type: "INIT_ANECDOTES",
+    data: { anecdotes },
+  };
+}
+
+export default { vote, create, init };
