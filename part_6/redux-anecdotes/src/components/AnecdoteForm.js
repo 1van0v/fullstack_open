@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 
-import * as anecdoteActions from "../store/actions/anecdoteActions";
+import anecdoteActions from "../store/actions/anecdoteActions";
+import notificationActions from "../store/actions/notificationActions";
 
 export default function AnecdoteForm() {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ export default function AnecdoteForm() {
     const content = event.target.content.value;
     event.target.content.value = "";
     dispatch(anecdoteActions.create(content));
+    dispatch(notificationActions.notify(`you created "${content}"`));
   };
 
   return (

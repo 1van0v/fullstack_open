@@ -1,4 +1,4 @@
-export function vote(id) {
+function vote(id) {
   return {
     type: "VOTE",
     data: {
@@ -7,7 +7,7 @@ export function vote(id) {
   };
 }
 
-export function create(anecdote) {
+function create(anecdote) {
   return {
     type: "CREATE",
     data: {
@@ -16,4 +16,4 @@ export function create(anecdote) {
   };
 }
 
-export default vote;
+export default { vote, create };
