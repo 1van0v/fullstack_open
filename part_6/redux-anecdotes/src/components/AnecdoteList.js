@@ -5,7 +5,11 @@ import anecdoteActions from "../store/actions/anecdoteActions";
 import notificationActions from "../store/actions/notificationActions";
 
 export default function AnecdoteForm() {
-  const anecdotes = useSelector((state) => state.anecdotes);
+  const anecdotes = useSelector(({ anecdotes, filter }) =>
+    filter
+      ? anecdotes.filter((i) => i.content.toLowerCase().includes(filter))
+      : anecdotes
+  );
   const dispatch = useDispatch();
 
   const vote = ({ id, content }) => {
