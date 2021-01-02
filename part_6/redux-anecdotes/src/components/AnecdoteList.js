@@ -15,7 +15,6 @@ export default function AnecdoteForm() {
 
   useEffect(() => {
     anecdotesService.getAll().then((data) => {
-      console.log("anecdotes", data);
       dispatch(anecdoteActions.init(data));
     });
   }, [dispatch]);

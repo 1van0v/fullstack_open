@@ -10,9 +10,7 @@ function vote(id) {
 function create(anecdote) {
   return {
     type: "CREATE",
-    data: {
-      content: anecdote,
-    },
+    data: anecdote,
   };
 }
 
