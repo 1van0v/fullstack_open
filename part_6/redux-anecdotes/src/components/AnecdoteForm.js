@@ -1,17 +1,15 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { connect } from "react-redux";
 
 import anecdoteActions from "../store/actions/anecdoteActions";
 
-export default function AnecdoteForm() {
-  const dispatch = useDispatch();
-
+function AnecdoteForm(props) {
   const createAnecdote = async (event) => {
     event.preventDefault();
     const content = event.target.content.value;
     event.target.content.value = "";
 
-    dispatch(anecdoteActions.post(content));
+    props.sendAnecdote(content);
   };
 
   return (
@@ -26,3 +24,9 @@ export default function AnecdoteForm() {
     </>
   );
 }
+
+const ConnectedAnecdoteForm = connect(null, {
+  sendAnecdote: anecdoteActions.post,
+})(AnecdoteForm);
+
+export default ConnectedAnecdoteForm;

@@ -1,16 +1,15 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { connect } from "react-redux";
 
 import filterActions from "../store/actions/filterActions";
 
-export default function () {
-  const dispatch = useDispatch();
+function Filter(props) {
   const style = {
     marginBottom: 10,
   };
 
   const handleChange = (event) => {
-    dispatch(filterActions.setFilter(event.target.value));
+    props.setFilter(event.target.value);
   };
 
   return (
@@ -19,3 +18,9 @@ export default function () {
     </div>
   );
 }
+
+const ConnectedFilter = connect(null, { setFilter: filterActions.setFilter })(
+  Filter
+);
+
+export default ConnectedFilter;
