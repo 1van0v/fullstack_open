@@ -1,10 +1,17 @@
+let messageTimer;
+
 function setNotification(message, duration) {
   return function (dispatch) {
     dispatch(notify(message));
 
-    setTimeout(() => dispatch(clearMessage()), duration * 1000);
+    if (messageTimer) {
+      clearTimeout(messageTimer);
+    }
+
+    messageTimer = setTimeout(() => dispatch(clearMessage()), duration * 1000);
   };
 }
+
 function notify(message) {
   return {
     type: "NOTIFY",
