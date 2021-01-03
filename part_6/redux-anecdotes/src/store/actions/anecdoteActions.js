@@ -1,4 +1,5 @@
 import anecdotesService from "../../services/anecdotes";
+import notificationActions from "./notificationActions";
 
 function vote(id) {
   return {
@@ -6,6 +7,15 @@ function vote(id) {
     data: {
       id,
     },
+  };
+}
+
+function post(text) {
+  return async function (dispatch) {
+    const anecdote = await anecdotesService.create(text);
+
+    dispatch(create(anecdote));
+    dispatch(notificationActions.notify(`you created "${text}"`));
   };
 }
 
@@ -30,4 +40,4 @@ function fetch() {
   };
 }
 
-export default { vote, create, init, fetch };
+export default { vote, create, init, fetch, post };
