@@ -9,7 +9,9 @@ function vote({ votes, ...anecdote }) {
     });
 
     dispatch(update(updated));
-    dispatch(notificationActions.notify(`you voted "${anecdote.content}`));
+    dispatch(
+      notificationActions.setNotification(`you voted "${anecdote.content}`, 5)
+    );
   };
 }
 
@@ -25,7 +27,7 @@ function post(text) {
     const anecdote = await anecdotesService.create(text);
 
     dispatch(create(anecdote));
-    dispatch(notificationActions.notify(`you created "${text}"`));
+    dispatch(notificationActions.setNotification(`you created "${text}"`, 5));
   };
 }
 
