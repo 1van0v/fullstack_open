@@ -1,12 +1,22 @@
 import anecdotesService from "../../services/anecdotes";
 import notificationActions from "./notificationActions";
 
-function vote(id) {
+function vote({ votes, ...anecdote }) {
+  return async function (dispatch) {
+    const updated = await anecdotesService.update({
+      ...anecdote,
+      votes: votes + 1,
+    });
+
+    dispatch(update(updated));
+    dispatch(notificationActions.notify(`you voted "${anecdote.content}`));
+  };
+}
+
+function update(anecdote) {
   return {
-    type: "VOTE",
-    data: {
-      id,
-    },
+    type: "UPDATE_ANECDOTE",
+    data: anecdote,
   };
 }
 
@@ -40,4 +50,4 @@ function fetch() {
   };
 }
 
-export default { vote, create, init, fetch, post };
+export default { vote, update, create, init, fetch, post };

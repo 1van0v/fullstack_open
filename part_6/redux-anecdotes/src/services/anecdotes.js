@@ -17,4 +17,12 @@ function create(anecdote) {
   }).then((res) => res.json());
 }
 
-export default { getAll, create };
+function update(anecdote) {
+  return fetch(`/anecdotes/${anecdote.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(anecdote),
+  }).then((res) => res.json());
+}
+
+export default { getAll, create, update };
