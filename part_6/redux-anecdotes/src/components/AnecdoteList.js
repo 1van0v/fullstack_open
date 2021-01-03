@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import anecdoteActions from "../store/actions/anecdoteActions";
 import notificationActions from "../store/actions/notificationActions";
-import anecdotesService from "../services/anecdotes";
 
 export default function AnecdoteForm() {
   const anecdotes = useSelector(({ anecdotes, filter }) =>
@@ -14,9 +13,7 @@ export default function AnecdoteForm() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    anecdotesService.getAll().then((data) => {
-      dispatch(anecdoteActions.init(data));
-    });
+    dispatch(anecdoteActions.fetch());
   }, [dispatch]);
 
   const vote = ({ id, content }) => {

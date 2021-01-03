@@ -1,3 +1,5 @@
+import anecdotesService from "../../services/anecdotes";
+
 function vote(id) {
   return {
     type: "VOTE",
@@ -21,4 +23,11 @@ function init(anecdotes) {
   };
 }
 
-export default { vote, create, init };
+function fetch() {
+  return async function (dispatch) {
+    const anecdotes = await anecdotesService.getAll();
+    dispatch(init(anecdotes));
+  };
+}
+
+export default { vote, create, init, fetch };
